@@ -3,11 +3,10 @@
 extern crate test;
 extern crate rand;
 
-use rand::Rng;
+// use rand::Rng;
 use rand::distributions::{IndependentSample, Range};
 use std::thread;
 use std::thread::JoinHandle;
-// use std::io;
 
 fn main() {
     estimate_pi();
@@ -21,9 +20,9 @@ pub fn estimate_pi() {
     let total = 100_000;
     let mut in_circle_main = 0;
 
-    // let computation1 = compute_on_thread(total / 2);
+    let computation1 = compute_on_thread(total / 2);
 
-    for _ in 0..(total) {
+    for _ in 0..(total/2) {
         let a = between.ind_sample(&mut rng);
         let b = between.ind_sample(&mut rng);
         if a*a + b*b <= 1. {
@@ -31,8 +30,7 @@ pub fn estimate_pi() {
         }
     }
 
-    // let in_circle_thread1 = computation1.join().unwrap();
-    let in_circle_thread1 = 0;
+    let in_circle_thread1 = computation1.join().unwrap();
 
     println!("Value of pi - {}", 4. * ((in_circle_main + in_circle_thread1) as f64) / (total as f64));
     // println!("Generated random number - {}", random_number);
