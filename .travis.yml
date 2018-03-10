@@ -1,4 +1,7 @@
-sudo: false
+language: rust
+
+cache: cargo
 
 script:
-  - ./build_scripts/build.sh
+  - cargo build --verbose --all
+  - cargo test --verbose --all
