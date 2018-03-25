@@ -3,8 +3,7 @@
 extern crate test;
 extern crate rand;
 
-// use rand::Rng;
-use rand::distributions::{IndependentSample, Range};
+use rand::Rng;
 use std::thread;
 use std::thread::JoinHandle;
 
@@ -13,44 +12,36 @@ fn main() {
 }
 
 pub fn estimate_pi() {
-    let mut rng = rand::thread_rng();
-    // let random_number = rng.gen_range(1,101);
-    let between = Range::new(-1f64, 1f64);
-    
     let total = 100_000;
-    let mut in_circle_main = 0;
 
-    let computation1 = compute_on_thread(total / 2);
+    let in_circle_main = get_in_circle_count(total / 2);
 
-    for _ in 0..(total/2) {
-        let a = between.ind_sample(&mut rng);
-        let b = between.ind_sample(&mut rng);
-        if a*a + b*b <= 1. {
-            in_circle_main += 1;
-        }
-    }
-
-    let in_circle_thread1 = computation1.join().unwrap();
+    let in_circle_thread1 = compute_on_thread(total / 2)
+        .join()
+        .expect("In circle point count sample space computation on a parallel thread failed!");
 
     println!("Value of pi - {}", 4. * ((in_circle_main + in_circle_thread1) as f64) / (total as f64));
-    // println!("Generated random number - {}", random_number);
 }
 
 fn compute_on_thread(loop_count: i32) -> JoinHandle<i32> {
-    return thread::spawn(move|| {
-        let mut internal_in_circle = 0;
-        let mut rng = rand::thread_rng();
-        let between = Range::new(-1f64, 1f64);
-
-        for _ in 0..loop_count {
-            let a = between.ind_sample(&mut rng);
-            let b = between.ind_sample(&mut rng);
-            if a*a + b*b <= 1. {
-                internal_in_circle += 1;
-            }
-        }
-        return internal_in_circle;
+    return thread::spawn(move || {
+        get_in_circle_count(loop_count)
     });
+}
+
+fn get_in_circle_count(loop_count: i32) -> i32 {
+    let mut rng = rand::thread_rng();
+    let mut in_circle = 0;
+
+    for _ in 0..(loop_count) {
+        let a = rng.gen_range(-1f64, 1f64);
+        let b = rng.gen_range(-1f64, 1f64);
+        if (a * a) + (b * b) <= 1. {
+            in_circle += 1;
+        }
+    }
+
+    in_circle
 }
 
 #[cfg(test)]
