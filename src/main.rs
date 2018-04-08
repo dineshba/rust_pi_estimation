@@ -6,9 +6,13 @@ extern crate rand;
 use rand::Rng;
 use std::thread;
 use std::thread::JoinHandle;
+use std::time::Instant;
 
 fn main() {
+    let now = Instant::now();
     estimate_pi(8_000_000, 8);
+    let time_taken = now.elapsed();
+    println!("Time taken in seconds: {}.{}", time_taken.as_secs(), time_taken.subsec_nanos());
 }
 
 pub fn estimate_pi(total_points: i32, total_threads: i32) {
