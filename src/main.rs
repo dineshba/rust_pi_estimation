@@ -28,13 +28,7 @@ fn print_value_of_pi(total_points: i32, total_in_circle_points: i32) {
 }
 
 fn compute_on_multiple_threads(total_count: i32, num_of_threads: i32) -> Vec<JoinHandle<i32>> {
-    let mut handles = vec![];
-
-    for _ in 0..num_of_threads {
-        handles.push(compute_on_single_thread(total_count / num_of_threads));
-    }
-
-    handles
+    (0..num_of_threads).map(|_| compute_on_single_thread(total_count / num_of_threads)).collect()
 }
 
 fn compute_on_single_thread(loop_count: i32) -> JoinHandle<i32> {
@@ -45,17 +39,15 @@ fn compute_on_single_thread(loop_count: i32) -> JoinHandle<i32> {
 
 fn get_in_circle_count(loop_count: i32) -> i32 {
     let mut rng = rand::thread_rng();
-    let mut in_circle = 0;
 
-    for _ in 0..(loop_count) {
-        let a = rng.gen_range(-1f64, 1f64);
-        let b = rng.gen_range(-1f64, 1f64);
-        if (a * a) + (b * b) <= 1. {
-            in_circle += 1;
-        }
-    }
-
-    in_circle
+    (0..loop_count)
+        .map(|_| {
+            let a = rng.gen_range(-1f64, 1f64);
+            let b = rng.gen_range(-1f64, 1f64);
+            (a * a) + (b * b)
+        })
+        .filter(|x| x <= &(1.0 as f64))
+        .count() as i32
 }
 
 #[cfg(test)]
