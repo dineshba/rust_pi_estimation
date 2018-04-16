@@ -41,7 +41,7 @@ fn compute_on_multiple_threads(total_count: i32, num_of_threads: i32, arc_tx: Ar
         thread::spawn(move || {
             let in_circle_count = get_in_circle_count(total_count / num_of_threads);
             let tx = arc_tx.lock().unwrap();
-            tx.send(in_circle_count).unwrap();
+            tx.send(in_circle_count).expect("Failed to update atomic reference counter!");
         });
     }
 }
